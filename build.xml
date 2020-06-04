@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project basedir="." default="jar" name="FileSimilarityAnalysis">
+	<property environment="env" />
+	<property name="ECLIPSE_HOME" value="../../../../../etc/eclipse" />
+	<property name="Common.location" value="../Common" />
+	<property name="debuglevel" value="source,lines,vars" />
+	<property name="target" value="1.6" />
+	<property name="source" value="1.6" />
+	<path id="JUnit 4.libraryclasspath">
+		<pathelement location="${ECLIPSE_HOME}/plugins/org.junit_4.8.1.v4_8_1_v20100427-1100/junit.jar" />
+		<pathelement location="${ECLIPSE_HOME}/plugins/org.hamcrest.core_1.1.0.v20090501071000.jar" />
+	</path>
+	<path id="Common.classpath">
+		<pathelement location="${Common.location}/bin" />
+		<path refid="JUnit 4.libraryclasspath" />
+	</path>
+	<path id="FileSimilarityAnalysis.classpath">
+		<pathelement location="bin" />
+		<path refid="Common.classpath" />
+	</path>
+	<target name="init">
+		<mkdir dir="bin" />
+		<copy includeemptydirs="false" todir="bin">
+			<fileset dir="src">
+				<exclude name="**/*.launch" />
+				<exclude name="**/*.java" />
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="clean">
+		<delete dir="bin" />
+		<delete dir="${Common.location}/bin" />
+		<delete file="dist/FileSimilarityAnalysis.jar" />
+		<delete file="dist/FileSimilarityAnalysis-source.zip" />
+	</target>
+
+	<target depends="clean" name="cleanall">
+		<ant antfile="build.xml" dir="${Common.location}" inheritAll="false" target="clean" />
+	</target>
+
+	<target depends="build-subprojects,build-project" name="build" />
+	<target name="build-subprojects">
+		<ant antfile="build.xml" dir="${Common.location}" inheritAll="false" target="build-project">
+			<propertyset>
+				<propertyref name="build.compiler" />
+			</propertyset>
+		</ant>
+	</target>
+	<target depends="init" name="build-project">
+		<echo message="${ant.project.name}: ${ant.file}" />
+		<javac debug="true" debuglevel="${debuglevel}" destdir="bin" source="${source}" target="${target}">
+			<src path="src" />
+			<classpath refid="FileSimilarityAnalysis.classpath" />
+		</javac>
+	</target>
+
+	<target name="compile">
+		<mkdir dir="bin" />
+		<javac srcdir="../Common/src/com/eyalzo/common/" destdir="bin" includeantruntime="false" />
+		<javac srcdir="src" destdir="bin" classpathref="classpath" includeantruntime="false" />
+	</target>
+
+	<!-- Adding external jar -->
+	<property name="lib.dir" value="lib" />
+	<path id="classpath">
+		<fileset dir="${lib.dir}" includes="**/*.jar" />
+	</path>
+
+	<target name="jar" depends="compile">
+		<mkdir dir="dist" />
+		<jar destfile="dist/SimAnalysis.jar" basedir="bin" excludes="**/com/eyalzo/common/webgui/*.class **/com/eyalzo/common/cli/*.class **/com/eyalzo/common/cluster/*.class">
+			<manifest>
+				<attribute name="Main-Class" value="com.eyalzo.filesimilarityanalysis.SimAnalysis" />
+			</manifest>
+		</jar>
+		<jar destfile="dist/DedupEstimate.jar" basedir="bin" excludes="**/com/eyalzo/common/webgui/*.class **/com/eyalzo/common/cli/*.class **/com/eyalzo/common/cluster/*.class">
+			<manifest>
+				<attribute name="Main-Class" value="com.eyalzo.filesimilarityanalysis.DedupEstimate" />
+			</manifest>
+		</jar>
+		<jar destfile="dist/DeflateBlocks.jar" basedir="bin" excludes="**/com/eyalzo/common/webgui/*.class **/com/eyalzo/common/cli/*.class **/com/eyalzo/common/cluster/*.class">
+			<manifest>
+				<attribute name="Main-Class" value="com.eyalzo.filesimilarityanalysis.DeflateBlocks" />
+			</manifest>
+		</jar>
+		<jar destfile="dist/GzipPackBlocks.jar" basedir="bin" excludes="**/com/eyalzo/common/webgui/*.class **/com/eyalzo/common/cli/*.class **/com/eyalzo/common/cluster/*.class">
+			<manifest>
+				<attribute name="Main-Class" value="com.eyalzo.filesimilarityanalysis.GzipPackBlocks" />
+			</manifest>
+		</jar>
+	</target>
+
+	<target name="zip">
+		<mkdir dir="dist" />
+		<delete file="dist/FileSimilarityAnalysis-source.zip" />
+		<zip destfile="dist/FileSimilarityAnalysis-source.zip">
+			<zipfileset dir="src/com/eyalzo/filesimilarityanalysis" prefix="FileSimilarityAnalysis/src/com/eyalzo/filesimilarityanalysis" includes="**/*.java" />
+			<zipfileset dir="../Common/src/com/eyalzo/common" prefix="Common/src/com/eyalzo/common" includes="files/*.java misc/*.java net/*.java webgui/*.java" />
+		</zip>
+	</target>
+</project>
