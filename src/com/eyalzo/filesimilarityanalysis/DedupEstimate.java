@@ -75,14 +75,14 @@ public class DedupEstimate {
 			System.exit(-1);
 		}
 
-		System.out.println("Directory: " + dirName);
+		System.out.println("Folder: " + dirName);
 
 		//
 		// List files in dir
 		//
 		List<String> fileList = FileUtils.getDirFileListSorted(dirName, MIN_FILE_SIZE, MAX_FILE_SIZE);
 		if (fileList == null || fileList.isEmpty()) {
-			System.out.println("No files in dir \"" + dirName + "\" (after filtering min-max)");
+			System.out.println("No files in folder \"" + dirName + "\" (after filtering min-max)");
 			System.exit(-2);
 		}
 
@@ -92,21 +92,22 @@ public class DedupEstimate {
 		// Details relevant only to single mask-bits
 		System.out.println(String.format("Mask bits: %,d", maskBits));
 		System.out
-				.println(String.format("Average chunk size: %,d (not considering the max)", pack.getAverageChunkLen()));
-		System.out
 				.println(String.format("Chunk size range: %,d - %,d", pack.getMinChunkSize(), pack.getMaxChunkSize()));
-		System.out.println(String.format("Processed file size range: %,d - %,d", MIN_FILE_SIZE, MAX_FILE_SIZE));
+		System.out.println(
+				String.format("Expected average chunk size: %,d (considering the min chunk size but not the max)",
+						pack.getAverageChunkLen()));
+		System.out.println(String.format("Allowed file size in folder: %,d - %,d", MIN_FILE_SIZE, MAX_FILE_SIZE));
 
 		// Legend
 		System.out.println("\nLegend\n------");
-		System.out.println("name - original file name (no path)");
-		System.out.println("size - file size (bytes)");
+		System.out.println("serial - order in which files were processed");
+		System.out.println("avg_chunk - average chunk size in practice");
 		System.out.println("chunks - number of chunks (see mask bits above)");
-		System.out.println("new_chunks - number of unique chunks not found in any file before (count by unique hash)");
 		System.out.println(
-				"overlap_bytes - overlapping bytes with previous files (does not consider identical chunks within the current file)");
+				"self_bytes - number of bytes in chunks that are identical to previous chunks in the same file");
 		System.out.println(
-				"overlap_ratio - redundancy ratio when comparing with all previous files (see overlap_prev_bytes)");
+				"glob_bytes - number of bytes in chunks that are identical to chunks in previous files (does not include self_bytes)");
+		System.out.println("dedup_ratio - overall redundancy: (self_bytes + glob_bytes) / file_size");
 
 		// Header
 		System.out.println(
