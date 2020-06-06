@@ -39,14 +39,12 @@ import com.eyalzo.common.files.FileUtils;
 /**
  * @author Eyal Zohar
  */
-public class DedupEstimate
-{
-	private static final long	MIN_FILE_SIZE	= 1000;
-	private static final long	MAX_FILE_SIZE	= 4000000000L;
-	private static final int	FILE_BLOCK_SIZE	= 1000000;
+public class DedupEstimate {
+	private static final long MIN_FILE_SIZE = 1000;
+	private static final long MAX_FILE_SIZE = 4000000000L;
+	private static final int FILE_BLOCK_SIZE = 1000000;
 
-	private static void printUsage()
-	{
+	private static void printUsage() {
 		System.out.println("Usage: <dir-name> <chunk-bits (" + PackChunking.MIN_MASK_BITS + "-"
 				+ PackChunking.MAX_MASK_BITS + ")>");
 		System.out.println("   chunk-bits: can be a range like \"8-9\".");
@@ -56,13 +54,11 @@ public class DedupEstimate
 	 * @param args
 	 *            Command line arguments.
 	 */
-	public static void main(String[] args)
-	{
+	public static void main(String[] args) {
 		//
 		// Get dir name from command line
 		//
-		if (args.length < 2)
-		{
+		if (args.length < 2) {
 			printUsage();
 			System.exit(-1);
 		}
@@ -73,8 +69,8 @@ public class DedupEstimate
 		String[] split = args[1].split("-");
 		int maskBits = Integer.parseInt(split[0]);
 		int maskBitsMax = split.length == 1 ? maskBits : Integer.parseInt(split[1]);
-		if (maskBits < PackChunking.MIN_MASK_BITS || maskBitsMax > PackChunking.MAX_MASK_BITS || maskBitsMax < maskBits)
-		{
+		if (maskBits < PackChunking.MIN_MASK_BITS || maskBitsMax > PackChunking.MAX_MASK_BITS
+				|| maskBitsMax < maskBits) {
 			printUsage();
 			System.exit(-1);
 		}
@@ -85,8 +81,7 @@ public class DedupEstimate
 		// List files in dir
 		//
 		List<String> fileList = FileUtils.getDirFileListSorted(dirName, MIN_FILE_SIZE, MAX_FILE_SIZE);
-		if (fileList == null || fileList.isEmpty())
-		{
+		if (fileList == null || fileList.isEmpty()) {
 			System.out.println("No files in dir \"" + dirName + "\" (after filtering min-max)");
 			System.exit(-2);
 		}
@@ -108,18 +103,17 @@ public class DedupEstimate
 		System.out.println("size - file size (bytes)");
 		System.out.println("chunks - number of chunks (see mask bits above)");
 		System.out.println("new_chunks - number of unique chunks not found in any file before (count by unique hash)");
-		System.out
-				.println("overlap_bytes - overlapping bytes with previous files (does not consider identical chunks within the current file)");
-		System.out
-				.println("overlap_ratio - redundancy ratio when comparing with all previous files (see overlap_prev_bytes)");
+		System.out.println(
+				"overlap_bytes - overlapping bytes with previous files (does not consider identical chunks within the current file)");
+		System.out.println(
+				"overlap_ratio - redundancy ratio when comparing with all previous files (see overlap_prev_bytes)");
 
 		// Header
-		System.out
-				.println("\nserial     file_size bits avg_chunk    chunks    self_bytes    glob_bytes dedup_ratio file_name");
+		System.out.println(
+				"\nserial     file_size bits avg_chunk    chunks    self_bytes    glob_bytes dedup_ratio file_name");
 
 		ByteBuffer buffer = ByteBuffer.allocate(FILE_BLOCK_SIZE);
-		for (; maskBits <= maskBitsMax; maskBits++)
-		{
+		for (; maskBits <= maskBitsMax; maskBits++) {
 			int serial = 0;
 			// Initialize the pack chunking for specific number of bits
 			pack = new PackChunking(maskBits);
@@ -134,8 +128,7 @@ public class DedupEstimate
 			long totalSelfDedup = 0;
 			long totalGlobalDedup = 0;
 
-			for (String curFileName : fileList)
-			{
+			for (String curFileName : fileList) {
 				File file = new File(curFileName);
 
 				// Get all the file's chunks
@@ -146,12 +139,10 @@ public class DedupEstimate
 				long curSelfDedupBytes = 0;
 				long curGlobalDedupBytes = 0;
 
-				for (Long curChunk : curChunkList)
-				{
+				for (Long curChunk : curChunkList) {
 					int curChunkLen = PackChunking.chunkToLen(curChunk);
 					// If self-dedup
-					if (curChunkDedupChunks.contains(curChunk))
-					{
+					if (curChunkDedupChunks.contains(curChunk)) {
 						curSelfDedupBytes += curChunkLen;
 						continue;
 					}
@@ -160,8 +151,7 @@ public class DedupEstimate
 					curChunkDedupChunks.add(curChunk);
 
 					// If self-dedup
-					if (globalChunks.contains(curChunk))
-					{
+					if (globalChunks.contains(curChunk)) {
 						curGlobalDedupBytes += curChunkLen;
 					}
 				}

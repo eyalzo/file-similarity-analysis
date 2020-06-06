@@ -1,4 +1,10 @@
+!/target/*.jar
+/target/**
+
+!/.gitignore
+.gitignore
+
 /bin/
 /.classpath
-/.DS_Store
+.DS_Store
 /.project
