@@ -40,7 +40,7 @@
 					<archive>
 						<manifest>
 							<!-- Jar file entry point -->
-							<mainClass>com.eyalzo.filesimilarityanalysis.DedupEstimate.java</mainClass>
+							<mainClass>com.eyalzo.filesimilarityanalysis.DedupEstimate</mainClass>
 						</manifest>
 					</archive>
 				</configuration>
