@@ -1,6 +1,10 @@
 # file-similarity-analysis
 
 Compression and deduplication analysis tools, to run on local machine as jars.
+The tools were developed by Eyal Zohar as part of a research activity published in:
+
+1. [The Power of Prediction: Cloud Bandwidth and Cost Reduction](https://dl.acm.org/doi/10.1145/2018436.2018447)
+1. [Celleration: Loss-Resilient Traffic Redundancy Elimination for Cellular Data](https://dl.acm.org/doi/pdf/10.1145/2162081.2162096)
 
 ## DedupEstimate
 
