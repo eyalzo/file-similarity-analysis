@@ -692,6 +692,64 @@ public class FileUtils {
 		return list;
 	}
 
+	/**
+	 * 
+	 * @param dirName
+	 * @param minFileSize
+	 * @param maxFileSize
+	 *            If positive, return only files not larger than this size in bytes.
+	 * @return List of files in dir, sorted by name as string. May return null of dir name is empty of do not describe an existing directory.
+	 */
+	public static int getDirFileListRecursive(LinkedList<String> targetList, String dirName, long minFileSize,
+			long maxFileSize) {
+		// Sanity check
+		if (dirName == null)
+			return 0;
+
+		// Make sure that this is an existing directory
+		File file = new File(dirName);
+		if (!file.isDirectory())
+			return 0;
+
+		dirName = file.getAbsolutePath();
+
+		// Get all names
+		String[] fileNames = file.list();
+
+		// This should not happen after we already verified that the directory
+		// exists
+		if (fileNames == null)
+			return 0;
+
+		int result = 0;
+
+		for (String curName : fileNames) {
+			String fullPath = dirName + File.separatorChar + curName;
+
+			// Make sure that the entry is for an existing file
+			File curFile = new File(fullPath);
+
+			if (curFile.isDirectory()) {
+				int subResult = FileUtils.getDirFileListRecursive(targetList, fullPath, minFileSize, maxFileSize);
+				result += subResult;
+				continue;
+			}
+
+			if (!curFile.isFile())
+				continue;
+
+			// File size
+			if (curFile.length() < minFileSize || (maxFileSize > 0 && curFile.length() > maxFileSize))
+				continue;
+
+			// Add full path to list
+			targetList.add(fullPath);
+			result++;
+		}
+
+		return result;
+	}
+
 	public static List<String> getDirSubdirListSorted(String dirName) {
 		// Sanity check
 		if (dirName == null)

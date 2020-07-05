@@ -31,6 +31,7 @@ package com.eyalzo.filesimilarityanalysis;
 import java.io.File;
 import java.nio.ByteBuffer;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 
 import com.eyalzo.common.chunks.PackChunking;
@@ -80,7 +81,8 @@ public class DedupEstimate {
 		//
 		// List files in dir
 		//
-		List<String> fileList = FileUtils.getDirFileListSorted(dirName, MIN_FILE_SIZE, MAX_FILE_SIZE);
+		LinkedList<String> fileList = new LinkedList<String>();
+		FileUtils.getDirFileListRecursive(fileList, dirName, MIN_FILE_SIZE, MAX_FILE_SIZE);
 		if (fileList == null || fileList.isEmpty()) {
 			System.out.println("No files in folder \"" + dirName + "\" (after filtering min-max)");
 			System.exit(-2);
@@ -175,8 +177,8 @@ public class DedupEstimate {
 				// Print
 				serial++;
 				System.out.println(String.format("%-6d %,13d %4d %,9d %,9d %,13d %,13d %10.3f%% %s", serial,
-						file.length(), maskBits, file.length() / curChunkList.size(), curChunkList.size(),
-						curSelfDedupBytes, curGlobalDedupBytes, overlapRatio, nameToPrint));
+						file.length(), maskBits, curChunkList.size() == 0 ? 0 : (file.length() / curChunkList.size()),
+						curChunkList.size(), curSelfDedupBytes, curGlobalDedupBytes, overlapRatio, nameToPrint));
 			}
 
 			// End of files look
