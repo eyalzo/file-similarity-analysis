@@ -1,16 +1,23 @@
 # file-similarity-analysis
 
-Compression and deduplication analysis tools, to run on local machine as jars.
-The tools were developed by Eyal Zohar as part of a research activity published in:
+Compression and deduplication analysis tools, designed to run on a local machine as JAR files. These tools were developed by Eyal Zohar as part of research activities published in:
 
 1. [The Power of Prediction: Cloud Bandwidth and Cost Reduction](https://dl.acm.org/doi/10.1145/2018436.2018447)
-1. [Celleration: Loss-Resilient Traffic Redundancy Elimination for Cellular Data](https://dl.acm.org/doi/pdf/10.1145/2162081.2162096)
+2. [Celleration: Loss-Resilient Traffic Redundancy Elimination for Cellular Data](https://dl.acm.org/doi/pdf/10.1145/2162081.2162096)
 
-## DedupEstimate
+---
 
-Deduplication estimator - evaluates how efficient a deduplication of a directory would be. Allows choosing from a wide-range of deduplication granularity by number of bits in the rolling-hash mask. For more details about the concept see PACK project and the related publication. 
+## Tools Overview
 
-### Build
+### DedupEstimate
+
+The `DedupEstimate` tool evaluates how efficient deduplication of a directory would be. It allows users to choose a wide range of deduplication granularities by specifying the number of bits in the rolling-hash mask. For more details about the concept, see the PACK project and the related publications.
+
+---
+
+## Build Instructions
+
+To build the project, ensure you have [Maven](https://maven.apache.org/) installed, then run the following commands:
 
 ```bash
 cd /tmp
@@ -19,26 +26,55 @@ cd file-similarity-analysis
 mvn package
 ```
 
-### Running
+This will generate the JAR files in the `target` directory.
 
-Usage: `DedupEstimate.jar <dir-name> <chunk-bits>`
+---
 
-Note: The file is loaded to memory first, and then it is being processed as a whole.
-Therefore, very large files may require using the -Xmx flag to enlarge maximal memory allocation by the JVM. For example: `java -Xmx4000m -jar`
+## Running the Tools
 
-To build yourself a folder with similar files, you can run the following:
+### DedupEstimate
+
+#### Usage
 
 ```bash
-# If need to cleanup: rm -r /tmp/cnn
+java -jar target/DedupEstimate.jar <dir-name> <chunk-bits>
+```
+
+- `<dir-name>`: The directory containing the files to analyze.
+- `<chunk-bits>`: The number of bits for the rolling-hash mask. This can also be a range (e.g., `6-8`).
+
+#### Notes
+
+- The tool loads files into memory before processing them. For very large files, you may need to increase the JVM's maximum memory allocation using the `-Xmx` flag. For example:
+  ```bash
+  java -Xmx4000m -jar target/DedupEstimate.jar <dir-name> <chunk-bits>
+  ```
+
+---
+
+### Example: DedupEstimate
+
+To create a folder with similar files for testing, you can use the following commands:
+
+```bash
+# Cleanup if needed
+rm -r /tmp/cnn
+
+# Create a folder and download similar files
 mkdir -p /tmp/cnn
 cd /tmp/cnn
 for i in {1..5}; do curl -s "https://edition.cnn.com/" -o cnn$i.html; sleep 10; done
 ```
 
-### Example 1
+Run the `DedupEstimate` tool on the folder:
 
 ```bash
-# java -jar target/DedupEstimate.jar /tmp/cnn/ 6
+java -jar target/DedupEstimate.jar /tmp/cnn/ 6
+```
+
+Sample output:
+
+```plaintext
 Folder: /tmp/cnn
 Mask bits: 6
 Chunk size range: 16 - 256
@@ -62,3 +98,9 @@ serial     file_size bits avg_chunk    chunks    self_bytes    glob_bytes dedup_
 5          1,130,034    6        79    14,200       175,097       954,884     99.995% cnn5.html
 total      5,650,170    6        79    71,000       875,485     3,819,536     83.095% -
 ```
+
+---
+
+## License
+
+This project is licensed under the BSD license. See the source code for details.
